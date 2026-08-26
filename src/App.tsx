@@ -1,14 +1,3 @@
-// App.tsx
-//
-// Steps 1-2 only, for now: setup + auth + route protection. Routes that
-// depend on pages not built yet (Steps 3-6, parked in /_not_yet_built at
-// the project root) point at ComingSoonPage as a stand-in, so the three
-// route tiers (public / candidate-only / recruiter-only) can be proven out
-// end to end before the real pages exist.
-//
-// Each role still lands on its own home after login (see LoginPage):
-// candidates on "/", recruiters on "/recruiter".
-
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import { ProtectedRoute } from './auth/ProtectedRoute';
