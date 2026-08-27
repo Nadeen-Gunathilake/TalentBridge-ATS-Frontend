@@ -7,6 +7,9 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { JobListPage } from './pages/careers/JobListPage';
+import { JobDetailPage } from './pages/careers/JobDetailPage';
+import { MyApplicationsPage } from './pages/careers/MyApplicationsPage';
 
 function App() {
   return (
@@ -14,19 +17,20 @@ function App() {
       <Routes>
         {/* Careers site — public, plus candidate-only "my applications" */}
         <Route element={<CandidateLayout />}>
-          <Route path="/" element={<ComingSoonPage title="Job list (Step 3)" />} />
+          <Route path="/" element={<ComingSoonPage title="Job list" />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-
+          <Route path="/" element={<JobListPage />} />
+          <Route path="/jobs/:jobId" element={<JobDetailPage />} />
           <Route element={<ProtectedRoute allowedRoles={['CANDIDATE']} />}>
-            <Route path="/my-applications" element={<ComingSoonPage title="My applications (Step 4)" />} />
+            <Route path="/my-applications" element={<MyApplicationsPage />} />
           </Route>
         </Route>
 
         {/* Recruiter dashboard — recruiter-only */}
         <Route element={<ProtectedRoute allowedRoles={['RECRUITER']} />}>
           <Route element={<RecruiterLayout />}>
-            <Route path="/recruiter" element={<ComingSoonPage title="Recruiter jobs (Step 5)" />} />
+            <Route path="/recruiter" element={<ComingSoonPage title="Recruiter jobs" />} />
           </Route>
         </Route>
 
