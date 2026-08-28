@@ -10,14 +10,17 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { JobListPage } from './pages/careers/JobListPage';
 import { JobDetailPage } from './pages/careers/JobDetailPage';
 import { MyApplicationsPage } from './pages/careers/MyApplicationsPage';
+import { RecruiterJobsPage } from './pages/recruiter/RecruiterJobsPage';
+import { JobFormPage } from './pages/recruiter/JobFormPage';
+import { ApplicantsPage } from './pages/recruiter/ApplicantsPage';
+import { ApplicantDetailPage } from './pages/recruiter/ApplicantDetailPage';
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Careers site — public, plus candidate-only "my applications" */}
+
         <Route element={<CandidateLayout />}>
-          <Route path="/" element={<ComingSoonPage title="Job list" />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/" element={<JobListPage />} />
@@ -27,10 +30,13 @@ function App() {
           </Route>
         </Route>
 
-        {/* Recruiter dashboard — recruiter-only */}
         <Route element={<ProtectedRoute allowedRoles={['RECRUITER']} />}>
           <Route element={<RecruiterLayout />}>
-            <Route path="/recruiter" element={<ComingSoonPage title="Recruiter jobs" />} />
+            <Route path="/recruiter" element={<RecruiterJobsPage />} />
+            <Route path="/recruiter/jobs/new" element={<JobFormPage />} />
+            <Route path="/recruiter/jobs/:jobId/edit" element={<JobFormPage />} />
+            <Route path="/recruiter/jobs/:jobId/applicants" element={<ApplicantsPage />} />
+            <Route path="/recruiter/applications/:applicationId" element={<ApplicantDetailPage />} />
           </Route>
         </Route>
 

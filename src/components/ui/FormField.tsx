@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 interface BaseProps {
   id: string;
@@ -29,6 +29,25 @@ export function TextAreaField({
           {error}
         </p>
       )}
+    </div>
+  );
+}
+
+export function SelectField({ id, label, error, children, ...rest }: BaseProps & SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium text-slate-700">
+        {label}
+      </label>
+      <select
+        id={id}
+        className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+        aria-invalid={!!error}
+        {...rest}
+      >
+        {children}
+      </select>
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );
 }
