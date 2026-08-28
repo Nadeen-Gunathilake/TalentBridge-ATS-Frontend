@@ -5,7 +5,6 @@ import { CandidateLayout } from './components/layout/CandidateLayout';
 import { RecruiterLayout } from './components/layout/RecruiterLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
-import { ComingSoonPage } from './pages/ComingSoonPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { JobListPage } from './pages/careers/JobListPage';
 import { JobDetailPage } from './pages/careers/JobDetailPage';
