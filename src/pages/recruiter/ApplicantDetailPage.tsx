@@ -8,6 +8,7 @@ import { StatusBadge } from '../../components/ui/StatusBadge';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { TextAreaField } from '../../components/ui/FormField';
 import type { ApplicationNote, ApplicationStatus, RecruiterApplicationView } from '../../types/application';
+import { formatDateTime } from '../../utils/formatDate';
 
 export function ApplicantDetailPage() {
   const { applicationId } = useParams<{ applicationId: string }>();
@@ -163,7 +164,7 @@ export function ApplicantDetailPage() {
               <li key={note.id} className="rounded-md bg-slate-50 p-3 text-sm">
                 <p className="text-slate-700">{note.content}</p>
                 <p className="mt-1 text-xs text-slate-400">
-                  {note.authorName} · {new Date(note.createdAt).toLocaleString()}
+                  {note.authorName} · {formatDateTime(note.createdAt)}
                 </p>
               </li>
             ))}

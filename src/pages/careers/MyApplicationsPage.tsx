@@ -7,6 +7,7 @@ import { LoadingState, ErrorState, EmptyState } from '../../components/ui/StateV
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import type { CandidateApplication } from '../../types/application';
+import { formatDate } from '../../utils/formatDate';
 
 export function MyApplicationsPage() {
   const [applications, setApplications] = useState<CandidateApplication[] | null>(null);
@@ -61,7 +62,7 @@ export function MyApplicationsPage() {
                 <Link to={`/jobs/${app.jobId}`} className="font-medium text-slate-900 hover:text-brand-600">
                   {app.jobTitle}
                 </Link>
-                <p className="mt-1 text-xs text-slate-500">Applied {new Date(app.appliedAt).toLocaleDateString()}</p>
+                <p className="mt-1 text-xs text-slate-500">Applied {formatDate(app.appliedAt)} </p>
               </div>
               <div className="flex items-center gap-3">
                 <StatusBadge status={app.status} />

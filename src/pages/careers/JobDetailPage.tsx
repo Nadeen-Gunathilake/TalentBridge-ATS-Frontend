@@ -8,6 +8,7 @@ import { useMyAppliedJobIds } from '../../hooks/useMyAppliedJobIds';
 import { LoadingState, ErrorState } from '../../components/ui/StateViews';
 import { TextAreaField } from '../../components/ui/FormField';
 import type { Job } from '../../types/job';
+import { formatDate } from '../../utils/formatDate';
 
 export function JobDetailPage() {
   const { jobId } = useParams<{ jobId: string }>();
@@ -72,7 +73,7 @@ export function JobDetailPage() {
         {job.location} · {job.work_mode} · {job.employment_type} · {job.salary_range}
       </p>
       <p className="mt-1 text-xs text-slate-400">
-        Closes {new Date(job.closing_date).toLocaleDateString()}
+        Closes {formatDate(job.closing_date)}
         {isClosed && ' · Closed'}
       </p>
 
