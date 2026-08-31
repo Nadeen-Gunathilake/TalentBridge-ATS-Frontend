@@ -1,6 +1,6 @@
 # TalentBridge ATS — Frontend
 
-Phase 2 of TalentBridge: a React app that sits on top of the Spring Boot backend from Phase 1. One codebase, two experiences — a public careers site where candidates browse jobs and track their applications, and a recruiter dashboard where recruiters post jobs and move applicants through the hiring pipeline.
+A React app that sits on top of the Spring Boot backend. One codebase, two experiences — a public careers site where candidates browse jobs and track their applications, and a recruiter dashboard where recruiters post jobs and move applicants through the hiring pipeline.
 
 ## Strongest decisions
 
@@ -16,26 +16,7 @@ React + TypeScript + Vite, React Router, Axios, Tailwind CSS.
 
 ## Running it locally
 
-**1. Enable CORS on the backend first.** The backend has no CORS configuration by default — without it, the browser blocks every request from the frontend (`localhost:5173`) to the API (`localhost:8080`). Add this to `SecurityConfig.java`:
-
-```java
-@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("http://localhost:5173"));
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    config.setAllowedHeaders(List.of("*"));
-    config.setAllowCredentials(true);
-
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", config);
-    return source;
-}
-```
-
-and add `.cors(cors -> {})` to the top of the `http` chain in `securityFilterChain`, before `.authorizeHttpRequests(...)`.
-
-**2. Start the backend**, then:
+**1. Start the backend**, then:
 
 ```bash
 cp .env.example .env
@@ -57,9 +38,7 @@ npm run test
 
 ## Roles
 
-- **Candidate** — self-registers. Registering does *not* log you in (the backend returns no token from `/auth/register`), so you land on the login page after signing up. Browses and searches jobs, applies once per job with an optional cover note and résumé, tracks and withdraws their own applications.
-- **Recruiter** — accounts are seeded, not self-registered. Posts, edits, opens and closes jobs, reviews applicants, rates them, leaves notes, and advances them through the pipeline.
+- **Candidate** — self-registers. Registering does *not* log you in (the backend returns no token from `/auth/register`), so you land on the login page after signing up. Browses and searches jobs, applies once per job with an optional cover note and resume, tracks and withdraws their own applications.
+- **Recruiter** — accounts are seeded and can be made by other recruiters, not self-registered. Posts, edits, opens and closes jobs, reviews applicants, rates them, leaves notes, and advances them through the pipeline.
 
-Jobs aren't scoped to the recruiter who posted them — any recruiter can see and manage any job. That's deliberate: this is a single-company ATS, so every recruiter works for the same employer and a shared job pool is the right model, not a missing permission check.
-
-## Project structure
+Jobs aren't scoped to the recruiter who posted them — any recruiter can see and manage any job. This is deliberate since this is a single-company ATS.

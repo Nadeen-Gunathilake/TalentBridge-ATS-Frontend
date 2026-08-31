@@ -104,7 +104,7 @@ export function JobDetailPage() {
             <TextAreaField id="coverNote" label="Cover note (optional)" rows={4} value={coverNote} onChange={(e) => setCoverNote(e.target.value)} />
             <div>
               <label htmlFor="resume" className="block text-sm font-medium text-slate-700">
-                Résumé (optional, PDF)
+                Resume (optional, PDF)
               </label>
               <input
                 id="resume"
