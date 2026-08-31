@@ -1,75 +1,65 @@
-# React + TypeScript + Vite
+# TalentBridge ATS — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Phase 2 of TalentBridge: a React app that sits on top of the Spring Boot backend from Phase 1. One codebase, two experiences — a public careers site where candidates browse jobs and track their applications, and a recruiter dashboard where recruiters post jobs and move applicants through the hiring pipeline.
 
-Currently, two official plugins are available:
+## Strongest decisions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Candidate and recruiter never share a view.** `CandidateLayout` and `RecruiterLayout` are two separate shells with their own nav. More importantly, the *data* is separated at the type level, not just the UI — the candidate's own application type (`CandidateApplication`) has no field for rating, notes, or candidate identity, because the backend never sends those to a candidate in the first place. There's nothing to accidentally leak because there's nowhere for it to live on the candidate side.
 
-## React Compiler
+**Route protection doesn't just hide things — it never renders them.** `ProtectedRoute` checks the logged-in user's role *before* rendering anything, using a redirect during render (`<Navigate>`) instead of an effect that fires after the first paint. That distinction matters: a naive guard still flashes the protected page for one frame before redirecting. This one doesn't. A candidate typing `/recruiter` directly gets sent away immediately, not shown the page and then kicked out.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Pipeline rules live in one file.** `src/pipeline/pipelineRules.ts` is the only place that knows what a legal next stage is. It mirrors the backend's actual transition rules (`APPLIED → UNDER_REVIEW → SHORTLISTED → INTERVIEW → OFFER → HIRED`, with `REJECTED` reachable from anywhere non-terminal, and `WITHDRAWN` reachable only by the candidate, never a recruiter). The applicant review screen asks this file what buttons to show — it never lists every status and hopes the server catches a bad one.
 
-## Expanding the ESLint configuration
+## Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+React + TypeScript + Vite, React Router, Axios, Tailwind CSS.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Running it locally
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**1. Enable CORS on the backend first.** The backend has no CORS configuration by default — without it, the browser blocks every request from the frontend (`localhost:5173`) to the API (`localhost:8080`). Add this to `SecurityConfig.java`:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```java
+@Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of("http://localhost:5173"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setAllowCredentials(true);
 
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+and add `.cors(cors -> {})` to the top of the `http` chain in `securityFilterChain`, before `.authorizeHttpRequests(...)`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**2. Start the backend**, then:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+cp .env.example .env
+npm install
+npm run dev
 ```
+
+`.env` should point `VITE_API_BASE_URL` at your backend's origin — no `/api` suffix, since `/auth` sits outside `/api` on this backend.
+
+```bash
+npm run build   # type-checks then builds
+npm run lint
+npm run test
+```
+
+## Seeded recruiter login
+
+`hr@talentbridge.com` / whatever `ADMIN_PASSWORD` is set to in the backend's environment.
+
+## Roles
+
+- **Candidate** — self-registers. Registering does *not* log you in (the backend returns no token from `/auth/register`), so you land on the login page after signing up. Browses and searches jobs, applies once per job with an optional cover note and résumé, tracks and withdraws their own applications.
+- **Recruiter** — accounts are seeded, not self-registered. Posts, edits, opens and closes jobs, reviews applicants, rates them, leaves notes, and advances them through the pipeline.
+
+Jobs aren't scoped to the recruiter who posted them — any recruiter can see and manage any job. That's deliberate: this is a single-company ATS, so every recruiter works for the same employer and a shared job pool is the right model, not a missing permission check.
+
+## Project structure
