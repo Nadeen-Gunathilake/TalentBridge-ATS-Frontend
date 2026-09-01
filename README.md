@@ -2,6 +2,8 @@
 
 A React app that sits on top of the Spring Boot backend. One codebase, two experiences — a public careers site where candidates browse jobs and track their applications, and a recruiter dashboard where recruiters post jobs and move applicants through the hiring pipeline.
 
+**Live Demo:**[talentbridge-ats.up.railway.app](talentbridge-ats.up.railway.app)
+
 ## Strongest decisions
 
 **Candidate and recruiter never share a view.** `CandidateLayout` and `RecruiterLayout` are two separate shells with their own nav. More importantly, the *data* is separated at the type level, not just the UI — the candidate's own application type (`CandidateApplication`) has no field for rating, notes, or candidate identity, because the backend never sends those to a candidate in the first place. There's nothing to accidentally leak because there's nowhere for it to live on the candidate side.
@@ -34,7 +36,8 @@ npm run test
 
 ## Seeded recruiter login
 
-`hr@talentbridge.com` / whatever `ADMIN_PASSWORD` is set to in the backend's environment.
+`hr@talentbridge.com` / whatever `ADMIN_PASSWORD` is set to in the backend's environment.In production recruiter login is `hr@talentbridge.com` and admin password is `Hr@123`.
+To access the project in production - [Click Here](talentbridge-ats.up.railway.app).
 
 ## Roles
 
