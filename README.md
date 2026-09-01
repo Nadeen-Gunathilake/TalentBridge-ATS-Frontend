@@ -2,7 +2,7 @@
 
 A React app that sits on top of the Spring Boot backend. One codebase, two experiences — a public careers site where candidates browse jobs and track their applications, and a recruiter dashboard where recruiters post jobs and move applicants through the hiring pipeline.
 
-**Live Demo:**[talentbridge-ats.up.railway.app](talentbridge-ats.up.railway.app)
+**Live Demo:**[talentbridge-ats.up.railway.app](https://talentbridge-ats.up.railway.app)
 
 ## Strongest decisions
 
@@ -37,7 +37,7 @@ npm run test
 ## Seeded recruiter login
 
 `hr@talentbridge.com` / whatever `ADMIN_PASSWORD` is set to in the backend's environment.In production recruiter login is `hr@talentbridge.com` and admin password is `Hr@123`.
-To access the project in production - [Click Here](talentbridge-ats.up.railway.app).
+To access the project in production - [Click Here](https://talentbridge-ats.up.railway.app).
 
 ## Roles
 
