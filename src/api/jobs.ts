@@ -22,10 +22,10 @@ export function getJob(id: number) {
   return apiClient.get<Job>(`/api/jobs/${id}`).then((r) => r.data);
 }
 
-export function listAllJobsForRecruiter() {
+export function listAllJobsForRecruiter(page: number, size = 10) {
   return apiClient
-    .get<Page<Job>>('/api/jobs', { params: { sort: 'id,desc', page: 0, size: 100 } })
-    .then((r) => r.data.content);
+    .get<Page<Job>>('/api/jobs', { params: { sort: 'id,desc', page, size } })
+    .then((r) => r.data);
 }
 
 export function createJob(body: JobFormValues) {

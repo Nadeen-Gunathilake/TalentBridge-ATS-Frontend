@@ -4,10 +4,11 @@ import { listAllJobsForRecruiter, setJobStatus } from '../../api/jobs';
 import { extractErrorMessage } from '../../api/client';
 import { LoadingState, ErrorState, EmptyState } from '../../components/ui/StateViews';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
-import type { Job } from '../../types/job';
+import type { Job, Page } from '../../types/job';
 
 export function RecruiterJobsPage() {
-  const [jobs, setJobs] = useState<Job[] | null>(null);
+  const [data, setData] = useState<Page<Job> | null>(null);
+  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingCloseId, setPendingCloseId] = useState<number | null>(null);
@@ -16,20 +17,21 @@ export function RecruiterJobsPage() {
   function load() {
     setLoading(true);
     setError(null);
-    listAllJobsForRecruiter()
-      .then(setJobs)
+    listAllJobsForRecruiter(page)
+      .then(setData)
       .catch((err) => setError(extractErrorMessage(err, 'Could not load jobs.')))
       .finally(() => setLoading(false));
   }
 
-  useEffect(load, []);
+  useEffect(load, [page]);
+  const jobs = data?.content ?? null;
 
   async function confirmClose() {
     if (pendingCloseId == null) return;
     setUpdating(true);
     try {
       const updated = await setJobStatus(pendingCloseId, 'CLOSED');
-      setJobs((prev) => prev?.map((j) => (j.id === updated.id ? updated : j)) ?? null);
+      setData((prev) => (prev ? { ...prev, content: prev.content.map((j) => (j.id === updated.id ? updated : j)) } : null));
     } catch (err) {
       setError(extractErrorMessage(err, 'Could not close this job.'));
     } finally {
@@ -41,7 +43,7 @@ export function RecruiterJobsPage() {
   async function reopen(jobId: number) {
     try {
       const updated = await setJobStatus(jobId, 'OPEN');
-      setJobs((prev) => prev?.map((j) => (j.id === updated.id ? updated : j)) ?? null);
+      setData((prev) => (prev ? { ...prev, content: prev.content.map((j) => (j.id === updated.id ? updated : j)) } : null));
     } catch (err) {
       setError(extractErrorMessage(err, 'Could not reopen this job.'));
     }
@@ -98,6 +100,25 @@ export function RecruiterJobsPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {data && data.totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-4">
+          <button type="button" disabled={page === 0} onClick={() => setPage((p) => p - 1)} className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-40">
+            Previous
+          </button>
+          <span className="text-sm text-slate-500">
+            Page {page + 1} of {data.totalPages}
+          </span>
+          <button
+            type="button"
+            disabled={page + 1 >= data.totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
       )}
 
       <ConfirmDialog
